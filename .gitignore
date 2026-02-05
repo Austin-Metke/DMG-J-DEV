@@ -1,0 +1,41 @@
+### IntelliJ IDEA ###
+out/
+.idea/
+*.iml
+
+### Eclipse ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+
+### Mac OS ###
+.DS_Store
+
+### Compiled Java ###
+*.class
+
+### ROMs and BIOS ###
+*.gb
+*.gbc
+*.bin
+
+### Save files ###
+*.sav
+
+### Misc ###
+*.diff

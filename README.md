@@ -19,18 +19,11 @@ A Game Boy emulator written in Java. Supports loading ROMs, executing CPU instru
 
 ## Getting Started
 
-1. Place your Game Boy ROM and BIOS file in the project directory.
-2. Update the `Main.java` file to point to your ROM and BIOS file.
-3. Run the project using your preferred Java IDE or with `javac` and `java`.
-   ```bash
-   javac -d bin src/*.java
-   java -cp bin Main
-   ```
-
-## Requirements
+### Requirements
 
 - Java 8 or newer
 - A valid Game Boy ROM file (`.gb`)
+- **NOTE** Only supports MCB1-3
 
 ## In Progress
 - [ ] Load games without use of BIOS
@@ -40,9 +33,9 @@ A Game Boy emulator written in Java. Supports loading ROMs, executing CPU instru
 - [ ] Interrupt Handling (Broken)
 
 ## TODO
-- [ ] Memory Viewer/Debugger (Crude)
-- [ ] Functional UI
-- [ ] Audio emulation
+- [x] Memory Viewer/Debugger (Crude)
+- [-] Functional UI
+- [x] Audio emulation
 - [ ] Save states
 - [x] BIOS support
 - [ ] Link cable emulation
