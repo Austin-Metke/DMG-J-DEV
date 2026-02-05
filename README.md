@@ -27,14 +27,14 @@ A Game Boy emulator written in Java. Supports loading ROMs, executing CPU instru
 
 ## In Progress
 - [ ] Load games without use of BIOS
-- [ ] Input Handling
-- [ ] Implement all opcodes
-- [ ] Sprite Rendering (Broken)
+- [x] ~~Input Handling~~
+- [x] ~~Implement all opcodes~~
+- [x] ~~Sprite Rendering (Broken)~~
 - [ ] Interrupt Handling (Broken)
 
 ## TODO
 - [x] Memory Viewer/Debugger (Crude)
-- [-] Functional UI
+- [ ] Functional UI
 - [x] Audio emulation
 - [ ] Save states
 - [x] BIOS support
