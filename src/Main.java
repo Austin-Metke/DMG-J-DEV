@@ -1,15 +1,15 @@
-
 public class Main {
     public static void main(String[] args) {
+        Z80 cpu = new Z80();
+        GPU gpu = new GPU(3);
+        MMU mmu = new MMU();
 
-    Z80 cpu = new Z80();
+        GameBoy gb = new GameBoy(cpu, mmu, gpu);
+        DebuggerController debugController = new DebuggerController(gb);
+        DebuggerUI debuggerUI = new DebuggerUI(gb, debugController);
+        gb.setDebuggerUI(debuggerUI);
+        gb.setDebuggerController(debugController);
 
-    cpu.reset();
-
-    while(true) {
-        cpu.tick();
-    }
-
-
+        gb.run();
     }
 }
