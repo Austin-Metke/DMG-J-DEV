@@ -143,7 +143,7 @@ public class GPU extends JPanel {
                 if (modeClock >= 204) {
                     modeClock = 0;
                     line++;
-                    if (line == 143) {
+                    if (line == 144) {
                         mode = 1;
                         pushFramebufferToScreen();
 
@@ -283,6 +283,8 @@ public class GPU extends JPanel {
     public int readByte(int addr) {
         return switch (addr) {
             case 0xFF40 -> ((switchbg & 1)) |
+                    ((switchobj & 1) << 1) |
+                    ((obj_size & 1) << 2) |
                     ((bgmap & 1) << 3) |
                     ((bgtile & 1) << 4) |
                     ((switchlcd & 1) << 7);
@@ -377,7 +379,7 @@ public class GPU extends JPanel {
                     objdata[obj].palette  = (val & 0x10) != 0;
                     objdata[obj].xFlip    = (val & 0x20) != 0;
                     objdata[obj].yFlip    = (val & 0x40) != 0;
-                    objdata[obj].priority = (val & 0x80) != 0;
+                    objdata[obj].priority = (val & 0x80) == 0;
                 }
             }
         }

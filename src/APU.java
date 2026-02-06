@@ -238,9 +238,6 @@ public class APU {
         leftSample = leftSample * 50;
         rightSample = rightSample * 50;
 
-        filteredLeft = 0;
-        filteredRight = 0;
-        
         // Apply low-pass filter
         filteredLeft += (leftSample - filteredLeft) * FILTER_ALPHA;
         filteredRight += (rightSample - filteredRight) * FILTER_ALPHA;

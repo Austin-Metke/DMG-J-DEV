@@ -46,7 +46,7 @@ public class Timer_t {
 
         clock.sub += cpu.registers.m;
 
-        if(clock.sub >= 4) {
+        while(clock.sub >= 4) {
             clock.main++;
             clock.sub -= 4;
 
