@@ -410,6 +410,34 @@ public class Z80 {
     }
 
 
+    /**
+     * Execute a single instruction: fetch, decode, execute, update clocks,
+     * handle delayed IME enable, and check interrupts.
+     */
+    public void tick() {
+        // Fetch and execute opcode
+        int opcode = mmu.readByte(registers.pc++) & 0xFF;
+        opcodeMap[opcode].execute();
+        registers.pc &= 0xFFFF;  // Mask PC to 16-bit
+
+        // Update master clock
+        clock_m += registers.m;
+        clock_t += registers.t;
+
+        // Handle delayed IME enable (EI takes effect after next instruction)
+        if (enableIMEAfterNextInstr) {
+            registers.ime = 1;
+            enableIMEAfterNextInstr = false;
+        }
+
+        // Check and handle interrupts
+        checkInterrupts();
+
+        // Update clock again for any cycles used by interrupt handling
+        clock_m += registers.m;
+        clock_t += registers.t;
+    }
+
     public void reset() {
         this.clock_m = 0;
         this.clock_t = 0;
