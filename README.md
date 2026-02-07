@@ -23,7 +23,7 @@ A Game Boy emulator written in Java. Supports loading ROMs, executing CPU instru
 
 - Java 8 or newer
 - A valid Game Boy ROM file (`.gb`)
-- **NOTE** Only supports MCB1-3
+- **NOTE** Only supports MBC1
 
 ## In Progress
 - [ ] Load games without use of BIOS
