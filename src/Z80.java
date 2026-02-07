@@ -5,6 +5,7 @@ public class Z80 {
     int clock_t;
     Registers registers;
     boolean enableIMEAfterNextInstr = false;
+    private boolean skipBios;
 
     public void setMmu(MMU mmu) {
         this.mmu = mmu;
@@ -439,6 +440,7 @@ public class Z80 {
     }
 
     public void reset() {
+
         this.clock_m = 0;
         this.clock_t = 0;
         this.enableIMEAfterNextInstr = false;
@@ -457,6 +459,24 @@ public class Z80 {
         registers.ime = 0;
         registers.m = 0;
         registers.t = 0;
+
+        if(skipBios) {
+            registers.pc = 0x100;
+            registers.sp = 0xFFFE;
+            registers.a = 0x01;
+            registers.f = 0xB0;
+            registers.b = 0x00;
+            registers.c = 0x13;
+            registers.d = 0x00;
+            registers.e = 0xD8;
+            registers.h = 0x01;
+            registers.l = 0x4D;
+
+            
+
+        }
+        
+        
     }
 
 
@@ -1299,9 +1319,16 @@ public class Z80 {
                 return;
             }
         }
+
+        
     }
 
-
+    public void setSkipBios(boolean skipBios) {
+        this.skipBios = skipBios;
+    }
+    public boolean getSkipBios() {
+        return skipBios;
+    }
 
     public static class Registers {
         public int ime;
@@ -1379,6 +1406,9 @@ public class Z80 {
         public boolean isFlagN() { return (f & 0x40) != 0; }
         public boolean isFlagH() { return (f & 0x20) != 0; }
         public boolean isFlagC() { return (f & 0x10) != 0; }
+    
+
+    
     }
 
 
