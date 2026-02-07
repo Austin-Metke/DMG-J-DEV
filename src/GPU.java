@@ -143,7 +143,7 @@ public class GPU extends JPanel {
                 if (modeClock >= 204) {
                     modeClock = 0;
                     line++;
-                    if (line == 143) {
+                    if (line == 144) {
                         mode = 1;
                         pushFramebufferToScreen();
 
