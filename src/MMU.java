@@ -1,5 +1,5 @@
 public class MMU {
-    int inBios;
+    boolean inBios;
 
     public byte[] bios;
     public byte[] rom;
@@ -50,7 +50,7 @@ public class MMU {
     private GPU gpu;
     MMU() {
 
-        inBios = 1;
+        inBios = true;
 
         eram = new int[0x8000];  // 32KB for MBC1 RAM (4 banks of 8KB)
         zram = new int[0x80];
@@ -74,7 +74,7 @@ public class MMU {
         System.out.println("Cartridge type: 0x" + Integer.toHexString(cartType));
         
         // Reset MMU state for new ROM
-        this.inBios = 1;  // Start with BIOS enabled
+        this.inBios = true;
         this.romBank = 1;
         this.ramBank = 0;
         this.ramOn = false;
@@ -91,6 +91,10 @@ public class MMU {
     public void loadBIOS(byte[] biosData) {
         this.bios = biosData;
     }
+    
+    public void setInBios(boolean inBios) {
+        this.inBios = inBios;
+    }
 
 
     public int readByte(int addr) {
@@ -99,12 +103,12 @@ public class MMU {
         switch(addr&0xF000) {
             //BIOS
             case 0x0000:
-                if (bios == null && addr < 0x0100 && inBios == 1) {
+                if (bios == null && addr < 0x0100 && inBios ) {
                     return 0x00; // To prevent the debugger from crashing
                 }
 
 
-                if(inBios == 1) {
+                if(inBios) {
                     if (addr < 0x0100) return bios[addr] & 0xFF;
                     else {
                         return rom[addr]&0xFF;
@@ -206,7 +210,7 @@ public class MMU {
     public void writeByte(int addr, int val) {
         int high = addr & 0xF000;
         if (addr == 0xFF50 && val == 0x01) {
-            inBios = 0;
+            inBios = false;
         }
 
         switch (high) {

@@ -5,8 +5,10 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.*;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
-
 public class GameBoy {
     Z80 cpu;
     MMU mmu;
@@ -18,6 +20,7 @@ public class GameBoy {
     private DebuggerUI debuggerUI;
     private DebuggerController debugger;
     private boolean romLoaded = false;
+    private boolean useBios = false;
 
     public GameBoy(Z80 cpu, MMU mmu, GPU gpu) {
         this.cpu = cpu;
@@ -45,6 +48,10 @@ public class GameBoy {
         this.mmu.setApu(apu);
     }
 
+    public void setUseBios(boolean useBios) {
+        this.useBios = useBios;
+    }
+
     public void setDebuggerUI(DebuggerUI debuggerUI) {
         this.debuggerUI = debuggerUI;
     }
@@ -53,10 +60,20 @@ public class GameBoy {
         this.debugger = debugger;
     }
 
+
+
     /** Load a ROM from the given path and reset CPU/GPU/Timer/APU. Use this when switching ROMs. */
     public void loadNewROM(String romPath) throws IOException {
-        mmu.loadROM(ROMLoader.loadROM(romPath));
-        mmu.loadBIOS(ROMLoader.loadBIOS("gb_bios.bin"));
+        if( useBios) {
+            cpu.setSkipBios(false);
+            mmu.setInBios(true);
+            mmu.loadROM(ROMLoader.loadROM(romPath));
+        } else {
+            cpu.setSkipBios(true);
+            mmu.loadROM(ROMLoader.loadROM(romPath));
+            mmu.setInBios(false);
+        }
+
         cpu.reset();
         gpu.reset();
         timer.reset();
@@ -83,9 +100,18 @@ public class GameBoy {
             JMenuBar menuBar = new JMenuBar();
             JMenu fileMenu = new JMenu("File");
             JMenuItem openROMItem = new JMenuItem("Open ROM...");
-            openROMItem.addActionListener(e -> openROM());
-            fileMenu.add(openROMItem);
+            JCheckBoxMenuItem useBiosItem = new JCheckBoxMenuItem("Use BIOS");
+            
             JMenuItem debuggerItem = new JMenuItem("Show Debugger");
+            JMenuItem openBIOSItem = new JMenuItem("Open BIOS...");
+
+
+            useBiosItem.addActionListener(e -> {
+                setUseBios(useBiosItem.isSelected());
+            });
+
+            openROMItem.addActionListener(e -> openROM());
+            openBIOSItem.addActionListener(e -> openBIOS());
             debuggerItem.addActionListener(e -> {
                 if (debuggerUI != null) {
                     boolean visible = debuggerUI.isVisible();
@@ -94,6 +120,9 @@ public class GameBoy {
                 }
             });
             fileMenu.add(debuggerItem);
+            fileMenu.add(openROMItem);
+            fileMenu.add(openBIOSItem);
+            fileMenu.add(useBiosItem);
             menuBar.add(fileMenu);
 
             frame.setJMenuBar(menuBar);
@@ -128,6 +157,15 @@ public class GameBoy {
         }
     }
 
+    private void openBIOS() {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setDialogTitle("Select BIOS");
+        chooser.setFileFilter(new FileNameExtensionFilter("Game Boy BIOS (.bin)", "bin"));
+        if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
+            loadBIOSFile(chooser.getSelectedFile());
+        }
+    }
+
     /** Load a ROM from a File object (used by both file chooser and drag-drop). */
     private void loadROMFile(File file) {
         String path = file.getAbsolutePath();
@@ -150,6 +188,15 @@ public class GameBoy {
             }
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(frame, "Failed to load ROM: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void loadBIOSFile(File file) {
+        String path = file.getAbsolutePath();
+        try {
+            mmu.loadBIOS(ROMLoader.loadBIOS(path));
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(frame, "Failed to load BIOS: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
