@@ -26,7 +26,7 @@ A Game Boy emulator written in Java. Supports loading ROMs, executing CPU instru
 - **NOTE** Only supports MBC1
 
 ## In Progress
-- [ ] Load games without use of BIOS
+- [x] ~~Load games without use of BIOS~~
 - [x] ~~Input Handling~~
 - [x] ~~Implement all opcodes~~
 - [x] ~~Sprite Rendering (Broken)~~
