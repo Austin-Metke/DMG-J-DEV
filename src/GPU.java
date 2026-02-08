@@ -1,6 +1,8 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GPU extends JPanel {
     private BufferedImage screen;
@@ -200,11 +202,25 @@ public class GPU extends JPanel {
         if(switchobj == 1) {
 
             // === Sprite Rendering ===
-            for (Sprite s : objdata) {
+            // Step 1: Collect sprites visible on this scanline (max 10, scanned in OAM order)
+            int spriteHeight = (obj_size == 1) ? 16 : 8;
+            List<Integer> visibleSprites = new ArrayList<>();
+            for (int i = 0; i < 40 && visibleSprites.size() < 10; i++) {
+                Sprite s = objdata[i];
+                if (line >= s.y && line < s.y + spriteHeight) {
+                    visibleSprites.add(i);
+                }
+            }
 
-                int spriteHeight = (obj_size == 1) ? 16 : 8;
+            // Step 2: Sort by X coordinate (lower X = higher priority).
+            // On DMG, equal X → lower OAM index wins (already stable from OAM scan order).
+            visibleSprites.sort((a, b) -> objdata[a].x - objdata[b].x);
 
-                if (line < s.y || line >= s.y + spriteHeight) continue; // only process sprites that intersect this scanline
+            // Step 3: Draw from lowest priority to highest (right to left in sorted order)
+            // so that higher-priority sprites overwrite lower-priority ones.
+            for (int idx = visibleSprites.size() - 1; idx >= 0; idx--) {
+                Sprite s = objdata[visibleSprites.get(idx)];
+
                 int tileLine = (line - s.y);
 
                 // Apply Y-flip
@@ -283,6 +299,8 @@ public class GPU extends JPanel {
     public int readByte(int addr) {
         return switch (addr) {
             case 0xFF40 -> ((switchbg & 1)) |
+                    ((switchobj & 1) << 1) |
+                    ((obj_size & 1) << 2) |
                     ((bgmap & 1) << 3) |
                     ((bgtile & 1) << 4) |
                     ((switchlcd & 1) << 7);
@@ -377,7 +395,7 @@ public class GPU extends JPanel {
                     objdata[obj].palette  = (val & 0x10) != 0;
                     objdata[obj].xFlip    = (val & 0x20) != 0;
                     objdata[obj].yFlip    = (val & 0x40) != 0;
-                    objdata[obj].priority = (val & 0x80) != 0;
+                    objdata[obj].priority = (val & 0x80) == 0; // true = above BG (bit 7 clear)
                 }
             }
         }
